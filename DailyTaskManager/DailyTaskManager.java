@@ -34,7 +34,7 @@ public class DailyTaskManager {
                 case "1":
                     displayTasks(tasks, completedTasks, addedTasks);
                     //clearing the console
-                    ClearConsole();
+                    ClearConsole(scanner);
                     break;
 
                     //if the user inputs 2, the user can change the tasks that they have into anything they want
@@ -87,7 +87,7 @@ public class DailyTaskManager {
                         break;
                     }
                     //clearing the console
-                    ClearConsole();
+                    ClearConsole(scanner);
                     break;
 
                     //if the user inputs a 3 then it will show them how many tasks they have completed, they will get a different answer
@@ -100,7 +100,7 @@ public class DailyTaskManager {
                         System.out.println("Total tasks done: " + completedTasks.size() + "/" + (tasks.length + addedTasks.size()));
                     }
                     //to clear the console
-                    ClearConsole();
+                    ClearConsole(scanner);
                     break;
 
                     //if the user inputs a 4, then they can change the status of tasks in every list
@@ -207,7 +207,7 @@ public class DailyTaskManager {
                         }
                     }
                     //to clear the console
-                    ClearConsole();
+                    ClearConsole(scanner);
                     break;
 
                     //if the user inputs 5 then they can a new task into the addedTask list
@@ -265,7 +265,7 @@ public class DailyTaskManager {
                     //if the user inputs an invalid input then it will print this and restart the loop
                 default:
                     System.out.println("Invalid input. Please try again.");
-                    ClearConsole();
+                    ClearConsole(scanner);
                     break;
             }
         }
@@ -336,10 +336,10 @@ public class DailyTaskManager {
         return newArray;
     }
 
-    //the method to clear the console
-    public static void ClearConsole() {
+    //the method to clear the console and so that when the user is done with that option they must press enter to continue first
+    public static void ClearConsole(Scanner scanner) {
         System.out.println("\nPress Enter to continue");
-        new Scanner(System.in).nextLine();
+        scanner.nextLine();
         try {
             if (System.getProperty("os.name").contains("Windows")) {
                 new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
