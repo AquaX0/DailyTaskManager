@@ -79,7 +79,9 @@ public class DailyTaskManager {
                         } else if (n <= addedTasks.size()){
                             addedTasks.set(n - tasks.length - 1, task);
                         } else {
-                            System.out.println("Invalid input! Please try again");
+                            System.out.println("\nInvalid input! Please try again");
+                            System.out.println("\nPress Enter to continue");
+                            scanner.nextLine();
                         }
 
                         System.out.println("Task updated successfully!");
@@ -93,17 +95,30 @@ public class DailyTaskManager {
                     //if the user inputs a 3 then it will show them how many tasks they have completed, they will get a different answer
                 //based on how many completed task they have
                 case "3":
-                    if (tasks.length == 0 && addedTasks.isEmpty()) {
-                        System.out.println("You have completed all the tasks");
-                        break;
+                    int totalTasks = tasks.length + addedTasks.size();
+                    int completedCount = completedTasks.size();
+
+                    if (totalTasks == 0) {
+                        System.out.println("Congratulations! You have completed all the tasks!");
                     } else {
-                        System.out.println("Total tasks done: " + completedTasks.size() + "/" + (tasks.length + addedTasks.size()));
+                        double progress = (double) completedCount / totalTasks;
+
+                        System.out.println("Total tasks done: " + completedCount + "/" + totalTasks);
+
+                        if (progress >= 0.75) {
+                            System.out.println("Almost there, just 1/4 task(s) and you will be done");
+                        } else if (progress >= 0.5) {
+                            System.out.println("You're halfway done");
+                        } else if (progress >= 0.25) {
+                            System.out.println("Good enough, there's still a lot more tasks to complete tho");
+                        } else {
+                            System.out.println("Get to completing tasks quick");
+                        }
                     }
-                    //to clear the console
                     ClearConsole(scanner);
                     break;
 
-                    //if the user inputs a 4, then they can change the status of tasks in every list
+                //if the user inputs a 4, then they can change the status of tasks in every list
                 case "4":
                     //checks to see if there are still any unfinished tasks
                     if (tasks.length == 0 && addedTasks.isEmpty() && completedTasks.isEmpty()) {
@@ -142,7 +157,9 @@ public class DailyTaskManager {
 
                                 //checks to see if the input is a string or not
                                 if (!input.matches("\\d+")) {
-                                    System.out.println("Invalid input. Please enter a number.");
+                                    System.out.println("\nInvalid input. Please enter a number.");
+                                    System.out.println("\nPress Enter to continue");
+                                    scanner.nextLine();
                                     //to restart the loop
                                     continue;
                                 }
@@ -164,7 +181,9 @@ public class DailyTaskManager {
                                     validInput = true;
                                     break;
                                 } else {
-                                    System.out.println("Invalid task number. Try again.");
+                                    System.out.println("\nInvalid task number. Try again.");
+                                    System.out.println("\nPress Enter to continue");
+                                    scanner.nextLine();
                                 }
                             }
                             //if the input is undo then the user will move the finished task to one of the unfinished task list
@@ -204,6 +223,8 @@ public class DailyTaskManager {
                             }
                         } else {
                             System.out.println("Invalid status! Please enter Done or Undo.");
+                            System.out.println("\nPress Enter to continue");
+                            scanner.nextLine();
                         }
                     }
                     //to clear the console
@@ -217,6 +238,8 @@ public class DailyTaskManager {
                     //to add the new task into the addedTask list
                     addedTasks.add(newTask);
                     System.out.println("Task added successfully!");
+                    //clearing the console
+                    ClearConsole(scanner);
                     break;
 
                     //if the user inputs 6 then they can remove a task they want to remove from the addedTask list
@@ -232,30 +255,43 @@ public class DailyTaskManager {
 
                     //a loop to make sure the user's input is valid
                     while (true) {
-                        //asking the user which task they want to remove from the addedTask list
-                        System.out.print("Choose a task to remove (1-" + addedTasks.size() + "): ");
+                        //asking the user which task they want to remove
+                        System.out.print("Enter the task number or name to remove: ");
                         String input = scanner.nextLine().trim();
 
-                        //checks to see if the input is a string or not
-                        if (!input.matches("\\d+")) {
-                            System.out.println("Invalid input. Please enter a number.");
-                            continue;
+                        //checks if input is a number
+                        if (input.matches("\\d+")) {
+                            int removeIndex = Integer.parseInt(input);
+                            if (removeIndex < 1 || removeIndex > addedTasks.size()) {
+                                System.out.println("Invalid task number. Try again.");
+                                System.out.println("\nPress Enter to continue");
+                                scanner.nextLine();
+                                continue;
+                            }
+                            addedTasks.remove(removeIndex - 1);
+                            System.out.println("Task removed successfully!");
+                            break;
                         }
 
-                        //changed the variable to an integer
-                        int removeIndex = Integer.parseInt(input);
-
-                        //checks to see if the index is a valid number, if it is it will continue the option's function to remove the task
-                        //from the addedTask list
-                        if (removeIndex < 1 || removeIndex > addedTasks.size()) {
-                            System.out.println("Invalid task number. Try again.");
-                            continue;
+                        //checks if input matches a task name (case-insensitive)
+                        boolean found = false;
+                        for (int i = 0; i < addedTasks.size(); i++) {
+                            if (addedTasks.get(i).equalsIgnoreCase(input)) {
+                                addedTasks.remove(i);
+                                System.out.println("Task removed successfully!");
+                                found = true;
+                                break;
+                            }
                         }
 
-                        addedTasks.remove(removeIndex - 1);
-                        System.out.println("Task removed successfully!");
-                        break;
+                        if (found) {
+                            break;
+                        } else {
+                            System.out.println("Task not found. Please try again.");
+                        }
                     }
+                    ClearConsole(scanner);
+                    break;
 
                     //if the user inputs 7, it will close the program
                 case "7":
@@ -279,19 +315,20 @@ public class DailyTaskManager {
 
     //the method to display all the unfinished tasks
     public static void displayUnfinishedTasks(String[] tasks, LinkedList<String> addedTasks) {
-        System.out.println("\nUnfinished Tasks:");
-
-        //checks if the everyday tasks list and the addedTask list are not empty
-        //if not it will then print the tasks from the lists that are not empty
-        if (tasks.length == 0) {
+        //checks if the tasks array and the addedTask linkedList is empty or not
+        //if only one are empty it will only print the one that is not empty
+        //if both are empty then it will print no unfinished task
+        if (tasks.length == 0 && addedTasks.isEmpty()) {
             System.out.println("No unfinished tasks.");
         } else {
-            System.out.println("Everyday Tasks:");
-            for (int i = 0; i < tasks.length; i++) {
-                System.out.println((i + 1) + ". " + tasks[i]);
+            if (tasks.length > 0) {
+                System.out.println("Everyday Tasks:");
+                for (int i = 0; i < tasks.length; i++) {
+                    System.out.println((i + 1) + ". " + tasks[i]);
+                }
             }
             if (!addedTasks.isEmpty()) {
-                System.out.println("Added Tasks");
+                System.out.println("Added Tasks:");
                 for (int i = 0; i < addedTasks.size(); i++) {
                     System.out.println((i + tasks.length + 1) + ". " + addedTasks.get(i));
                 }
